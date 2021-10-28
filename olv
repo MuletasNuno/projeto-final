@@ -31,11 +31,11 @@ def verificarDuplicado(matricula):
 
 def verificarAno(ano):
     if ((len(ano) == 4)):
-        LogInfo("ano valido")
+        LogInfo(str(ano) + ": ano valido")
         return True
     else:
         print("ERRO: Ano invalido")
-        LogInfo("ano invalido")
+        LogInfo(str(ano) + ": ano invalido")
         return False
 
 
