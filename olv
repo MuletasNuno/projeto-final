@@ -74,6 +74,7 @@ def SelectAnOption():
                 pedeInteiro = 0
         else:
             continue
+    LogInfo("opcão " + str(option) + " selecionada")
     return int(option)
 
 
