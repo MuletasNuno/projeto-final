@@ -1,0 +1,179 @@
+import datetime
+
+carros = []
+
+def PrintMenu():
+    print("1.Adicionar veiculo\n"
+          "2.Modificar veiculo\n"
+          "3.Mostrar veiculos\n"
+          "4.Apagar veiculo\n"
+          "5.Salvar\n"
+          "6.Procurar veiculo\n"
+          "0.Salvar e fechar\n")
+
+def verificarMatricula(matricula):
+    if ((len(matricula) == 8) and (matricula[2] == "-") and (matricula[5] == "-")):
+        LogInfo("Matricula valida")
+        return True
+    else:
+        print("ERRO: Matricula invalida")
+        LogInfo("User ERRO: Matricula invalida")
+        return False
+
+def verificarDuplicado(matricula):
+    for carro in carros:
+        LogInfo("Matricula duplicada")
+        if carro["matricula"] == matricula:
+            print("ERRO: Matricula duplicada")
+            return True
+        else:
+            return False
+
+def verificarAno(ano):
+    if ((len(ano) == 4)):
+        LogInfo("ano valido")
+        return True
+    else:
+        print("ERRO: Ano invalido")
+        LogInfo("ano invalido")
+        return False
+
+
+def LogInfo(action):
+    f = open("Log.txt", "a")
+    now = datetime.datetime.now()
+    f.write("{}-{}\n".format(now.strftime("%d/%m/%Y %H:%M:$S"), action))
+    return 1
+
+
+def LoadFile():
+    f = open("carros.txt", "r")
+    LogInfo("Tentativa de leitura de ficheiro de dados.")
+    Lines = f.readlines()
+    for line in Lines:
+        splitedLine = line.split(";")
+        carro = {"marca": splitedLine[0], "modelo": splitedLine[1], "ano": int(splitedLine[2]),
+                "matricula": splitedLine[3]}
+        carros.append(carro)
+    f.close()
+    return True
+
+def SaveFicheiro():
+    f = open("carros.txt","w")
+    for carro in carros:
+        f.write("{};{};{};{};\n".format(carro["marca"],carro["modelo"], carro["ano"], carro["matricula"]))
+    f.close()
+
+def SelectAnOption():
+    LogInfo("Seleccao de opcão")
+    pedeInteiro = 1
+    while pedeInteiro:
+        option = input("OPÇÃO: ")
+        if option.isdigit():
+            if 0 <= int(option) <= 6:
+                pedeInteiro = 0
+        else:
+            continue
+    return int(option)
+
+
+def Addcarro ():
+    verificacao = 0
+    LogInfo("Adicionar veiculo.")
+    marca = input("Insira a marca do veiculo: ")
+    modelo = input("Insira o modelo do veiculo: ")
+    while not verificacao:
+        ano = int(input("Insira o ano do veiculo: "))
+        matricula = input("Insira a matricula do veiculo (xx-xx-xx): ").upper()
+        verificacao = verificarMatricula(matricula) and not verificarDuplicado(matricula) and not verificarAno(ano)
+    print("---------------------------------------------")
+    carros.append({"marca": marca, "modelo": modelo, "ano": ano, "matricula": matricula})
+    LogInfo("Viatura adicionada.")
+
+
+def DeleteCarro():
+    verificacao = 0
+    LogInfo("Eliminando viatura.")
+    while not verificacao:
+        matricula = input("Insira a matricula do veiculo (xx-xx-xx): ").upper()
+        verificacao = verificarMatricula(matricula)
+    for carro in carros:
+        if carro["matricula"] == matricula:
+            carros.pop()
+    print("Viatura eliminada: ", matricula)
+    print("---------------------------------------------")
+    LogInfo("Eliminou uma viatura.")
+
+
+def Updatecarro ():
+    verificacao = 0
+    LogInfo("Atualizando veiculo")
+    while not verificacao:
+        matricula = input("Insira a matricula do veiculo (xx-xx-xx): ").upper()
+        verificacao = verificarMatricula(matricula)
+    for carro in carros:
+        if carro["matricula"] == matricula:
+            carro["marca"] = input("Insira a nova marca do veiculo: ")
+            carro["modelo"] = input("Insira o novo modelo do veiculo: ")
+            carro["ano"] = int(input("Insira o novo ano do veiculo: "))
+    LogInfo("Veiculo atualizado com sucesso")
+    print("---------------------------------------------")
+
+
+def ProcurarCarro():
+    LogInfo("Procurando veiculo")
+    verificacao = 0
+    while not verificacao:
+        matricula = input("Insira a matricula do veiculo (xx-xx-xx): ").upper()
+        verificacao = verificarMatricula(matricula)
+    found = False
+    print("---------------------------------------------")
+    for carro in carros:
+        if carro["matricula"] == matricula:
+            LogInfo("Veiculo encontrado")
+            found = True
+            matricula = carro["matricula"]
+            marca = carro["marca"]
+            ano = carro["ano"]
+            modelo = carro["modelo"]
+            print("VEÍCULO: {}\nMARCA: {}\nMODELO: {}\nANO: {}".format(matricula, marca, modelo, ano))
+    print("---------------------------------------------")
+    LogInfo("Veiculo encontrado")
+    if not found:
+        LogInfo("Veiculo não encontrado")
+        print("Veiculo não encontrado")
+
+
+def MostrarCarros():
+     print("---------------------------------------------")
+     for carro in carros:
+        print("{}: {} {} ({})".format(carro["matricula"],carro["marca"], carro["modelo"], carro["ano"]))
+     print("---------------------------------------------")
+
+if LoadFile():
+    menu = 1
+    while menu:
+        PrintMenu()
+        option = SelectAnOption()
+        if option == 1:
+            Addcarro()
+        elif option == 2:
+            Updatecarro()
+        elif option == 3:
+            MostrarCarros()
+        elif option == 4:
+            DeleteCarro()
+        elif option == 5:
+            SaveFicheiro()
+        elif option == 6:
+            ProcurarCarro()
+        elif option == 0:
+            SaveFicheiro()
+            menu = 0
+            break
+
+else:
+    print("Erro ao carregar ficheiro")
+    LogInfo("Erro ao carregar ficheiro")
+
+
